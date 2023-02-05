@@ -8,7 +8,6 @@ kaboom({
 loadSprite("steel", "sprites/steel.png")
 loadSprite("moon", "sprites/moon.png")
 loadSprite("cloud", "sprites/cloud.png")
-loadSprite("hill", "sprites/hill.png")
 loadSprite("sand", "sprites/sand.png")
 loadSprite("bean", "sprites/bean.png")
 loadSprite("snow", "sprites/snow.png")

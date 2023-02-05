@@ -2920,7 +2920,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprite("steel", "sprites/steel.png");
   loadSprite("moon", "sprites/moon.png");
   loadSprite("cloud", "sprites/cloud.png");
-  loadSprite("hill", "sprites/hill.png");
   loadSprite("sand", "sprites/sand.png");
   loadSprite("bean", "sprites/bean.png");
   loadSprite("snow", "sprites/snow.png");
