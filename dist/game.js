@@ -2976,7 +2976,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   layer(["obj", "ui"], "obj");
   scene("start", () => {
     add([
-      text("Press enter to start", { size: 40 }),
+      text("Press enter to start.You have 1 life for each level.Press 'z' for destroy to ghosts", { size: 22 }),
       pos(vec2(700, 450)),
       origin("center"),
       color(255, 255, 255)
@@ -2986,6 +2986,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     });
   });
   go("start");
+  var healthScore = 1;
   scene("game", (levelNumber = 0) => {
     function spawnCloud() {
       const dir = choose([LEFT, RIGHT]);
@@ -3007,12 +3008,21 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       pos(950, 40),
       layer("bg")
     ]);
+    const healthPoint = add([
+      text(healthScore),
+      pos(100, 50),
+      layer("ui"),
+      scale(1),
+      {
+        value: healthScore
+      }
+    ]);
     const player = add([
       sprite("dino"),
       scale(3),
       pos(25, 25),
       origin("center"),
-      health(3),
+      health(healthScore),
       area(),
       body()
     ]);
@@ -3059,7 +3069,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     const GUN_COOLDOWN_TIME = 1;
     let lastShootTime = time();
     const BULLET_SPEED = 500;
-    onKeyPress("space", () => {
+    onKeyPress("z", () => {
       if (time() - lastShootTime > GUN_COOLDOWN_TIME) {
         lastShootTime = time();
         bullet(player.pos, -1, "bullet");
@@ -3158,57 +3168,67 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       "~": () => [sprite("heart"), pos(0, -40), area(), "heart"]
     };
     const level = addLevel(LEVELS[levelNumber], levelConf);
-    const healthScore = add([
-      text(3),
-      pos(100, 50),
-      layer("ui"),
-      scale(1),
-      {
-        value: 3
-      }
-    ]);
     player.onCollide("fruit", (fruit) => {
       destroy(fruit);
     });
     player.onCollide("bomb", (bomb) => {
       shake(120);
       destroy(player);
-      healthScore.text = "YOU DIED";
+      healthPoint.text = "YOU DIED! WAIT 2 SECOND";
+      wait(2, () => {
+        go("start");
+      });
     });
     player.onCollide("danger", (danger) => {
       player.hurt(1);
-      healthScore.value--;
-      healthScore.text = healthScore.value;
+      healthPoint.value--;
+      healthPoint.text = healthPoint.value;
+      if (healthPoint.value === 0) {
+        healthPoint.text = "YOU DIED :( WAIT 2 SECOND";
+        destroy(player);
+        wait(2, () => {
+          go("start");
+        });
+      }
     });
     player.on("death", () => {
       destroy(player);
-      healthScore.text = "YOU DIED :(";
-    });
-    player.onCollide("portal", (portal) => {
-      let nextLevel = levelNumber + 1;
-      if (nextLevel <= LEVELS.length) {
-        go("game", nextLevel);
-      }
-    });
-    player.onCollide("heart", (heart) => {
-      destroy(player);
-      destroy(healthScore);
-      healthScore.text = " YOU WON!";
-      addKaboom(player.pos);
-      go("start");
+      healthPoint.text = "YOU DIED :( WAIT 2 SECOND";
+      wait(2, () => {
+        go("start");
+      });
     });
     player.onCollide("goldfly", (goldfly) => {
       destroy(player);
-      healthScore.text = "BOOO, YOU DIED!";
-      go("start");
+      healthPoint.text = "BOOO, YOU DIED! WAIT 2 SECOND";
+      wait(2, () => {
+        go("start");
+      });
     });
     onCollide("bullet", "goldfly", (bullet2, goldfly) => {
       destroy(goldfly);
       addKaboom(bullet2.pos);
     });
+    player.onCollide("heart", (heart) => {
+      healthPoint.text = "YOU WON! WAIT 2 SECOND!";
+      destroy(player);
+      addKaboom(player.pos);
+      wait(2, () => {
+        go("start");
+      });
+    });
+    player.onCollide("portal", (portal) => {
+      let nextLevel = levelNumber + 1;
+      if (nextLevel <= LEVELS.length) {
+        go("game", nextLevel, healthScore);
+      }
+    });
     player.onUpdate(() => {
       if (player.pos.y >= 800) {
-        score.text = "you lose";
+        healthPoint.text = "YOU LOSE";
+        wait(5, () => {
+          go("start", healthPoint);
+        });
       }
     });
   });

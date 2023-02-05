@@ -19,7 +19,6 @@ loadSprite("lemon", "sprites/lemon.png")
 loadSprite("pizza", "sprites/pizza.png")
 loadSprite("portal", "sprites/portal.png")
 loadSprite("goldfly", "sprites/goldfly.png")
-//loadSound("score", "sounds/score.mp3")
 const SPEED = 400
 const JUMP_FORCE = 800
 
@@ -75,7 +74,7 @@ layer(["obj", "ui"], "obj")
 scene("start", () => {
 
   add([
-    text("Press enter to start", { size: 40 }),
+    text("Press enter to start.You have 1 life for each level.Press 'z' for destroy to ghosts", { size: 22 }),
     pos(vec2(700, 450)),
     origin("center"),
     color(255, 255, 255),
@@ -88,10 +87,14 @@ scene("start", () => {
 
 go("start");
 
+  const healthScore = 1;
+
+
 
 
 
 scene("game", (levelNumber = 0) => {
+
 
 
   function spawnCloud() {
@@ -120,16 +123,28 @@ scene("game", (levelNumber = 0) => {
     layer("bg"),
   ])
 
+  const healthPoint = add([
+  text(healthScore),
+  pos(100,50),
+  layer("ui"),
+  scale(1),
+  {
+    value: healthScore,
+  }
   
-const player = add([
+])
+
+  const player = add([
   sprite("dino"),
   scale(3),
   pos(25, 25),
 	origin("center"),
-  health(3),
+  health(healthScore),
   area(),
   body(),
 ])
+
+  
 player.play("idle")
 
   add([
@@ -185,7 +200,7 @@ onKeyRelease(["left", "right"], () => {
   const BULLET_SPEED = 500;
   
 
-  onKeyPress("space", () => {
+  onKeyPress("z", () => {
     if (time() - lastShootTime > GUN_COOLDOWN_TIME) {
       lastShootTime = time();
       bullet(player.pos, -1, "bullet");
@@ -208,6 +223,8 @@ onKeyRelease(["left", "right"], () => {
     ]);
   }
 
+
+  
   bullet();
     onUpdate("missile", (missile) => {
      missile.move(BULLET_SPEED * missile.direction, 0);
@@ -300,73 +317,89 @@ const levelConf = {
 const level = addLevel(LEVELS[levelNumber], levelConf);
 
 
-  const healthScore = add([
-  text(3),
-  pos(100,50),
-  layer("ui"),
-  scale(1),
-  {
-    value: 3,
-  }
-  
-])
+
   
 player.onCollide("fruit", (fruit) => {
   destroy(fruit)
-
 })
+
 
   player.onCollide("bomb", (bomb) => {
     shake(120)
     destroy(player)
-    healthScore.text = "YOU DIED"
+    healthPoint.text = "YOU DIED! WAIT 2 SECOND"
+     wait(2, () => {
+       go("start")
+        
+      })
   })
 
 
 player.onCollide("danger", (danger) => {
   player.hurt(1)
-  healthScore.value--
-  healthScore.text = healthScore.value
+  healthPoint.value--
+  healthPoint.text = healthPoint.value
+  if(healthPoint.value === 0 ){
+      healthPoint.text = "YOU DIED :( WAIT 2 SECOND"
+     destroy(player)
+     wait(2, () => {
+       go("start")    
+      })
+  }
  
 })
 
   player.on("death", () => {
     destroy(player)
-    healthScore.text = "YOU DIED :("
+    healthPoint.text = "YOU DIED :( WAIT 2 SECOND"
+      wait(2, () => {
+       go("start")
+        
+      })
 })
 
+   player.onCollide("goldfly", (goldfly) => {
+    destroy(player)
+    healthPoint.text = "BOOO, YOU DIED! WAIT 2 SECOND"
+    wait(2, () => {
+     go("start")
+    })
+  })
 
+  
+   onCollide("bullet", "goldfly", (bullet,goldfly) => {
+    destroy(goldfly)
+    addKaboom(bullet.pos)
+  })
+  
+
+  player.onCollide("heart", (heart) => {
+  healthPoint.text  = "YOU WON! WAIT 2 SECOND!"
+  destroy(player)
+  addKaboom(player.pos)
+  wait(2, () => { 
+  go("start")
+})
+  
+})
+  
 player.onCollide("portal", (portal) => {
   let nextLevel = levelNumber + 1;
    if (nextLevel <= LEVELS.length){
-     go("game", nextLevel)
+     go("game", nextLevel,healthScore)
    }
 })  
 
 
-player.onCollide("heart", (heart) => {
-  destroy(player)
-  destroy(healthScore)
-  healthScore.text = " YOU WON!"
-  addKaboom(player.pos)
-  go("start")
-})
-
-  player.onCollide("goldfly", (goldfly) => {
-    destroy(player)
-    healthScore.text = "BOOO, YOU DIED!"
-    go("start")
-  })
-
-   onCollide("bullet", "goldfly", (bullet,goldfly) => {
-    destroy(goldfly)
-     addKaboom(bullet.pos)
-  })
+ 
   
   
   player.onUpdate(() => {
 		if (player.pos.y >= 800) {
-			score.text = "you lose"
+			healthPoint.text = "YOU LOSE"
+        wait(5, () => {
+       go("start", healthPoint)
+      })
 		}
 	})
 
