@@ -377,7 +377,7 @@ player.onCollide("danger", (danger) => {
   
 
   player.onCollide("heart", (heart) => {
-  healthPoint.text  = "YOU WON! WAIT 2 SECOND!"
+  healthPoint.text  = "YOU WIN! WAIT 2 SECOND!"
   destroy(player)
   addKaboom(player.pos)
   wait(2, () => { 
