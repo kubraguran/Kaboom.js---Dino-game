@@ -6,6 +6,9 @@
 # .....  https://GraciousTriangularHashfunction.kubraguran.repl.co ..... #
 
 
+! https://replit.com/@kubraguran/Dino-Game?v=1 !
+
+
 <img width="1438" alt="Screenshot 2023-02-05 at 13 32 31" src="https://user-images.githubusercontent.com/81765398/216826776-0bb43672-2d0e-4e5c-a805-ae22df5ae560.png">
 
 
