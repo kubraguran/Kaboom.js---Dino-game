@@ -3,7 +3,10 @@ import kaboom from "kaboom"
 
 kaboom({
     background: [134, 135, 247],
-    scale:1
+    scale:0.8,
+    width: 1450,
+    height:800,
+    left:200,
 })
 loadSprite("steel", "sprites/steel.png")
 loadSprite("moon", "sprites/moon.png")
