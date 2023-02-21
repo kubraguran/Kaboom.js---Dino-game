@@ -1,9 +1,9 @@
-# Kaboom.js---Dino-game
+ Kaboom.js---Dino-game
 
 # This game created with Kaboom.js for only laptops/desktops.
-# Please feel free to try with your computer.
+Please feel free to try with your computer.
  
-# .....  https://GraciousTriangularHashfunction.kubraguran.repl.co ..... #
+ https://GraciousTriangularHashfunction.kubraguran.repl.co 
 
 
 ! https://replit.com/@kubraguran/Dino-Game?v=1 !
